@@ -8,17 +8,17 @@ const C = document.body.querySelector('#C');
 
 function add(a,b) {
     ans = a + b;
-    return ans.toString().includes('e') ? ans.toExponential(2) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans;
 }
 
 function subtract(a,b) {
     ans = a - b;
-    return ans.toString().includes('e') ? ans.toExponential(2) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans;
 }
 
 function multiply(a,b) {
     ans = a * b;
-    return ans.toString().includes('e') ? ans.toExponential(2) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans;
 }
 
 function divide(a,b) {
@@ -26,7 +26,7 @@ function divide(a,b) {
         return 	'(凸ಠ益ಠ)凸';
     }
     ans = a / b;
-    return ans.toString().includes('e') ? ans.toExponential(2) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans;
 
 }
 
