@@ -1,0 +1,82 @@
+html {
+    color: #e9e9e9;
+    background-color: #1b1b1b;
+    font-size: 18px;
+    font-family: 'Roboto', sans-serif;
+}
+
+h1 {
+    text-align: center;
+}
+
+.container {
+    margin: 7vh auto;
+    padding: 3px;
+    display: flex;
+    width: 300px;
+    aspect-ratio: 3 / 4;
+    flex-direction: column;
+    align-items: stretch;
+    background-color: #2e2e2e;
+    gap: 10px;
+    border-radius: 5px;
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-around;
+    flex-grow: 1;
+}
+
+.operations {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.numbers {
+    flex-grow: 3;
+    display: flex;
+    flex-direction: column;
+}
+
+.display {
+    margin: 10px 15px 0px;
+    height: 20%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+}
+
+.display-sub {
+    flex-grow: 1;
+    font-size: 14px;
+    margin-top: auto;
+}
+
+.display-main {
+    flex-grow: 3;
+    font-size: 36px;
+}
+
+.btn {
+    width: 20%;
+    border-radius: 5px;
+    flex-grow: 1;
+    background-color: rgb(82, 82, 82);
+    color: #e9e9e9;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    box-shadow: none;
+}
+
+.row {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+}
+
+span {
+    vertical-align: middle;
+}
