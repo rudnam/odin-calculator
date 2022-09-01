@@ -1,10 +1,8 @@
 var DISPLAY = '';
 var OP = ''
-var firstNum;
+var firstNum = undefined;
 const mainDisplay = document.body.querySelector('#display-main');
 const subDisplay = document.body.querySelector('#display-sub');
-const AC = document.body.querySelector('#AC');
-const C = document.body.querySelector('#C');
 
 // from https://stackoverflow.com/questions/9539513/is-there-a-reliable-way-in-javascript-to-obtain-the-number-of-decimal-places-of/44815797#44815797
 function decimalPlaces(n) {
@@ -39,7 +37,11 @@ function divide(a,b) {
     }
     ans = a / b;
     return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(13 - (ans.toString().length - decimalPlaces(ans))) : ans;
+}
 
+function square(a) {
+    ans = a ** 2;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(13 - (ans.toString().length - decimalPlaces(ans))) : ans;
 }
 
 function operate(operator,a,b) {
@@ -61,13 +63,33 @@ function updateDisplay(e) {
         OP = '';
         mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
         subDisplay.innerText = '';
-    } else if (e.target.id == 'c') {
+    } else if (e.target.id == 'back') {
         DISPLAY = DISPLAY.slice(0,-1);
         mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
-    } else if (e.target.innerText == '=') {
-        if (firstNum) {
-            subDisplay.innerText = String(firstNum) + ' ' + OP + ' ' + DISPLAY + ' =';
+    } else if (e.target.id == 'sign') {
+        if (Number(DISPLAY) != 0) {
+            DISPLAY = -DISPLAY;
+            mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
+        }
+    } else if (e.target.id == 'sqr') {
+        if (DISPLAY) {
+            subDisplay.innerText = 'sqr( ' + DISPLAY + ' )'; 
+            DISPLAY = square(Number(DISPLAY));
+            mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
+        }
+    } else if (e.target.id == 'dec') {
+        if (!DISPLAY.includes('.')) {
+            DISPLAY += '.';
+            mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
+        }
+    } else if (e.target.id == 'equal') {
+        if (typeof firstNum !== 'undefined') {
+            subDisplay.innerText = String(firstNum) + ' ' + OP + ' ' + Number(DISPLAY) + ' =';
             DISPLAY = operate(OP,firstNum,Number(DISPLAY));
+            mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
+        } else if (DISPLAY.toString().includes('.')) {
+            DISPLAY = Number(DISPLAY);
+            subDisplay.innerText = Number(DISPLAY) + ' =';
             mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
         }
     } else if (isNaN(e.target.innerText)) {
@@ -86,8 +108,10 @@ function updateDisplay(e) {
         }
     } else {
         if (DISPLAY.length < 13) {
-            DISPLAY += e.target.innerText;
-            mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
+            if (e.target.innerText != '0' || DISPLAY || firstNum !== 'undefined') {
+                DISPLAY += e.target.innerText;
+                mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
+            }
         }
     }
 }
