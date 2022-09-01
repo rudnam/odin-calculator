@@ -43,13 +43,13 @@ function operate(operator,a,b) {
 }
 
 function updateDisplay(e) {
-    if (e.target.innerText == 'AC') {
+    if (e.target.id == 'ac') {
         DISPLAY = '';
         firstNum = undefined;
         OP = '';
         mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
         subDisplay.innerText = '';
-    } else if (e.target.innerText == 'C') {
+    } else if (e.target.id == 'c') {
         DISPLAY = DISPLAY.slice(0,-1);
         mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
     } else if (e.target.innerText == '=') {
