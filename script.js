@@ -6,19 +6,31 @@ const subDisplay = document.body.querySelector('#display-sub');
 const AC = document.body.querySelector('#AC');
 const C = document.body.querySelector('#C');
 
+// from https://stackoverflow.com/questions/9539513/is-there-a-reliable-way-in-javascript-to-obtain-the-number-of-decimal-places-of/44815797#44815797
+function decimalPlaces(n) {
+    function hasFraction(n) {
+        return Math.abs(Math.round(n) - n) > 1e-10;
+    }
+    let count = 0;
+    while (hasFraction(n * (10 ** count)) && isFinite(10 ** count)) {
+        count += 1;
+    }
+    return count;
+}
+
 function add(a,b) {
     ans = a + b;
-    return ans > 9999999999999 ? ans.toExponential(2) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(13 - (ans.toString().length - decimalPlaces(ans))) : ans;
 }
 
 function subtract(a,b) {
     ans = a - b;
-    return ans > 9999999999999 ? ans.toExponential(2) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(13 - (ans.toString().length - decimalPlaces(ans))) : ans;
 }
 
 function multiply(a,b) {
     ans = a * b;
-    return ans > 9999999999999 ? ans.toExponential(2) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(13 - (ans.toString().length - decimalPlaces(ans))) : ans;
 }
 
 function divide(a,b) {
@@ -26,7 +38,7 @@ function divide(a,b) {
         return 	'(凸ಠ益ಠ)凸';
     }
     ans = a / b;
-    return ans > 9999999999999 ? ans.toExponential(2) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(13 - (ans.toString().length - decimalPlaces(ans))) : ans;
 
 }
 
