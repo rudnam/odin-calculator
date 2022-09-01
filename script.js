@@ -1,6 +1,6 @@
 var DISPLAY = '';
 var OP = ''
-var firstNum = undefined;
+var FIRSTNUM = null;
 const mainDisplay = document.body.querySelector('#display-main');
 const subDisplay = document.body.querySelector('#display-sub');
 
@@ -59,7 +59,7 @@ function operate(operator,a,b) {
 function updateDisplay(e) {
     if (e.target.id == 'ac') {
         DISPLAY = '';
-        firstNum = undefined;
+        FIRSTNUM = null;
         OP = '';
         mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
         subDisplay.innerText = '';
@@ -83,9 +83,9 @@ function updateDisplay(e) {
             mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
         }
     } else if (e.target.id == 'equal') {
-        if (typeof firstNum !== 'undefined') {
-            subDisplay.innerText = String(firstNum) + ' ' + OP + ' ' + Number(DISPLAY) + ' =';
-            DISPLAY = operate(OP,firstNum,Number(DISPLAY));
+        if (FIRSTNUM !== null) {
+            subDisplay.innerText = String(FIRSTNUM) + ' ' + OP + ' ' + Number(DISPLAY) + ' =';
+            DISPLAY = operate(OP,FIRSTNUM,Number(DISPLAY));
             mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
         } else if (DISPLAY.toString().includes('.')) {
             DISPLAY = Number(DISPLAY);
@@ -93,22 +93,22 @@ function updateDisplay(e) {
             mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
         }
     } else if (isNaN(e.target.innerText)) {
-        if (DISPLAY && firstNum) {
-            DISPLAY = operate(OP,firstNum,Number(DISPLAY));
+        if (DISPLAY && (FIRSTNUM !== null)) {
+            DISPLAY = operate(OP,FIRSTNUM,Number(DISPLAY));
             mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
-            firstNum = Number(DISPLAY);
+            FIRSTNUM = Number(DISPLAY);
             DISPLAY = '';
             OP = e.target.innerText;
-            subDisplay.innerText = String(firstNum) + ' ' + OP;
+            subDisplay.innerText = String(FIRSTNUM) + ' ' + OP;
         } else {
-            firstNum = Number(DISPLAY);
+            FIRSTNUM = Number(DISPLAY);
             OP = e.target.innerText;
             DISPLAY = '';
-            subDisplay.innerText = String(firstNum) + ' ' + OP;
+            subDisplay.innerText = String(FIRSTNUM) + ' ' + OP;
         }
     } else {
         if (DISPLAY.length < 13) {
-            if (e.target.innerText != '0' || DISPLAY || firstNum !== 'undefined') {
+            if (e.target.innerText != '0' || DISPLAY || FIRSTNUM != null) {
                 DISPLAY += e.target.innerText;
                 mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
             }
@@ -116,7 +116,19 @@ function updateDisplay(e) {
     }
 }
 
+
 let btns = document.body.getElementsByClassName('btn');
 for (let i=0; i < btns.length; ++i) {
     btns[i].addEventListener('click', updateDisplay);
 }
+
+document.addEventListener('keydown', function(event) {
+    var dict = {'Backspace': 'back', '^': 'sqr', 'Enter': 'equal', '=': 'equal', 'Escape': 'ac', '/': 'div', '*': 'mult', '-': 'sub', '+': 'add', '.': 'dec'};
+    for (let i=0; i < 10; i++) {
+        dict[i] = i;
+    }
+    if (Object.keys(dict).includes(event.key)) {
+        document.getElementById(dict[event.key]).click();
+    }
+    console.log(event);
+});
