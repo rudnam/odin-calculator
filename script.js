@@ -22,17 +22,17 @@ function decimalPlaces(n) {
 
 function add(a,b) {
     ans = a + b;
-    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(13 - (ans.toString().length - decimalPlaces(ans))) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(Math.abs(13 - (ans.toString().length - decimalPlaces(ans)))) : ans;
 }
 
 function subtract(a,b) {
     ans = a - b;
-    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(13 - (ans.toString().length - decimalPlaces(ans))) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(Math.abs(13 - (ans.toString().length - decimalPlaces(ans)))) : ans;
 }
 
 function multiply(a,b) {
     ans = a * b;
-    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(13 - (ans.toString().length - decimalPlaces(ans))) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(Math.abs(13 - (ans.toString().length - decimalPlaces(ans)))) : ans;
 }
 
 function divide(a,b) {
@@ -40,12 +40,12 @@ function divide(a,b) {
         return 	'(凸ಠ益ಠ)凸';
     }
     ans = a / b;
-    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(13 - (ans.toString().length - decimalPlaces(ans))) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(Math.abs(13 - (ans.toString().length - decimalPlaces(ans)))) : ans;
 }
 
 function square(a) {
     ans = a ** 2;
-    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(13 - (ans.toString().length - decimalPlaces(ans))) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(Math.abs(13 - (ans.toString().length - decimalPlaces(ans)))) : ans;
 }
 
 function operate(operator,a,b) {
@@ -92,24 +92,38 @@ function updateDisplay(e) {
                     SUBDISPLAY += ' ' + OP;
                 }
             } else {
-                SUBDISPLAY = String(operate(OP,FIRSTNUM,Number(DISPLAY)));
+                SUBDISPLAY = String(operate(OP,FIRSTNUM,SECONDNUM));
                 DISPLAY = SUBDISPLAY;
                 OP = e.target.innerText;
                 FIRSTNUM = Number(DISPLAY);
+                SECONDNUM = null;
                 SUBDISPLAY += ' ' + OP;
             }
             CLEAR = true;
         } else {
             // other operations
             if (e.target.id == 'sign') {
-                DISPLAY = DISPLAY ? String(-Number(DISPLAY)) : '0';
+                SUBDISPLAY = 'negate( ' + DISPLAY + ' )';
+                FIRSTNUM = -FIRSTNUM;
+                SECONDNUM = null;
+                DISPLAY = DISPLAY ? String(FIRSTNUM) : '0';
             } else if (e.target.id == 'dec') {
+                if (CLEAR) {
+                    CLEAR = false;
+                    DISPLAY = '';
+                    SUBDISPLAY = '';
+                    OP = '';
+                    FIRSTNUM = null;
+                    SECONDNUM = null;
+                }
                 if (!DISPLAY.includes('.')) {
                     DISPLAY = DISPLAY ? DISPLAY + '.': '0.';
                 }
             } else if (e.target.id == 'sqr') {
-                SUBDISPLAY = 'sqr( ' + DISPLAY + ' )'
-                DISPLAY = String(square(Number(DISPLAY)));
+                SUBDISPLAY = 'sqr( ' + DISPLAY + ' )';
+                FIRSTNUM = square(Number(DISPLAY));
+                SECONDNUM = null;
+                DISPLAY = String(FIRSTNUM);
             } else if (e.target.id == 'equal') {
                 if (FIRSTNUM == null || !OP) {
                     FIRSTNUM = Number(DISPLAY);
@@ -138,6 +152,7 @@ function updateDisplay(e) {
             CLEAR = false;
         } else if (e.target.id == 'back') {
             if (CLEAR) {
+                CLEAR = false;
                 SUBDISPLAY = '';
                 OP = '';
                 FIRSTNUM = null;
