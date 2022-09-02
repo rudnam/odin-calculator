@@ -1,6 +1,10 @@
 var DISPLAY = '';
+var SUBDISPLAY = '';
 var OP = ''
+var HOLD = ''
 var FIRSTNUM = null;
+var SECONDNUM = null;
+var CLEAR = false;
 const mainDisplay = document.body.querySelector('#display-main');
 const subDisplay = document.body.querySelector('#display-sub');
 
@@ -57,65 +61,95 @@ function operate(operator,a,b) {
 }
 
 function updateDisplay(e) {
-    if (e.target.id == 'ac') {
-        DISPLAY = '';
-        FIRSTNUM = null;
-        OP = '';
-        mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
-        subDisplay.innerText = '';
-    } else if (e.target.id == 'back') {
-        DISPLAY = DISPLAY.slice(0,-1);
-        mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
-    } else if (e.target.id == 'sign') {
-        if (Number(DISPLAY) != 0) {
-            DISPLAY = -DISPLAY;
-            mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
+    console.log(DISPLAY);
+    if (e.target.classList.contains('number')) {
+        // numbers
+        if (DISPLAY.length < 13 || CLEAR) {
+            if (DISPLAY === '' || DISPLAY == '0' || CLEAR) {
+                DISPLAY = e.target.id;
+                CLEAR = false;
+            } else {
+                DISPLAY += e.target.id;
+            }
         }
-    } else if (e.target.id == 'sqr') {
-        if (DISPLAY) {
-            subDisplay.innerText = 'sqr( ' + DISPLAY + ' )'; 
-            DISPLAY = square(Number(DISPLAY));
-            mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
-        }
-    } else if (e.target.id == 'dec') {
-        if (!DISPLAY.includes('.')) {
-            DISPLAY += '.';
-            mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
-        }
-    } else if (e.target.id == 'equal') {
-        if (FIRSTNUM !== null) {
-            subDisplay.innerText = String(FIRSTNUM) + ' ' + OP + ' ' + Number(DISPLAY) + ' =';
-            DISPLAY = operate(OP,FIRSTNUM,Number(DISPLAY));
-            mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
-        } else if (DISPLAY.toString().includes('.')) {
-            DISPLAY = Number(DISPLAY);
-            subDisplay.innerText = Number(DISPLAY) + ' =';
-            mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
-        }
-    } else if (isNaN(e.target.innerText)) {
-        if (DISPLAY && (FIRSTNUM !== null)) {
-            DISPLAY = operate(OP,FIRSTNUM,Number(DISPLAY));
-            mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
-            FIRSTNUM = Number(DISPLAY);
-            DISPLAY = '';
-            OP = e.target.innerText;
-            subDisplay.innerText = String(FIRSTNUM) + ' ' + OP;
+    } else if (e.target.classList.contains('operation')) {
+        // operations
+        if (e.target.classList.contains('arithmetic')) {
+            // arithmetic
+            if (FIRSTNUM === null) {
+                OP = e.target.innerText;
+                FIRSTNUM = Number(DISPLAY);
+                SUBDISPLAY = DISPLAY + ' ' + OP;
+            } else if (SECONDNUM === null) {
+                if (CLEAR) {
+                    OP = e.target.innerText;
+                    SUBDISPLAY = DISPLAY + ' ' + OP;
+                } else {
+                    SUBDISPLAY = String(operate(OP,FIRSTNUM,Number(DISPLAY)));
+                    DISPLAY = SUBDISPLAY;
+                    OP = e.target.innerText;
+                    FIRSTNUM = Number(DISPLAY);
+                    SUBDISPLAY += ' ' + OP;
+                }
+            } else {
+                SUBDISPLAY = String(operate(OP,FIRSTNUM,Number(DISPLAY)));
+                DISPLAY = SUBDISPLAY;
+                OP = e.target.innerText;
+                FIRSTNUM = Number(DISPLAY);
+                SUBDISPLAY += ' ' + OP;
+            }
+            CLEAR = true;
         } else {
-            FIRSTNUM = Number(DISPLAY);
-            OP = e.target.innerText;
-            DISPLAY = '';
-            subDisplay.innerText = String(FIRSTNUM) + ' ' + OP;
+            // other operations
+            if (e.target.id == 'sign') {
+                DISPLAY = DISPLAY ? String(-Number(DISPLAY)) : '0';
+            } else if (e.target.id == 'dec') {
+                if (!DISPLAY.includes('.')) {
+                    DISPLAY = DISPLAY ? DISPLAY + '.': '0.';
+                }
+            } else if (e.target.id == 'sqr') {
+                SUBDISPLAY = 'sqr( ' + DISPLAY + ' )'
+                DISPLAY = String(square(Number(DISPLAY)));
+            } else if (e.target.id == 'equal') {
+                if (FIRSTNUM == null || !OP) {
+                    FIRSTNUM = Number(DISPLAY);
+                    SUBDISPLAY = String(FIRSTNUM) + ' =';
+                } else if (SECONDNUM == null) {
+                    SECONDNUM = DISPLAY ? Number(DISPLAY) : FIRSTNUM;
+                    SUBDISPLAY = String(FIRSTNUM) + ' ' + OP + ' ' + String(SECONDNUM) + ' =';
+                    DISPLAY = String(operate(OP,FIRSTNUM,SECONDNUM));
+                } else {
+                    FIRSTNUM = Number(DISPLAY);
+                    SUBDISPLAY = String(FIRSTNUM) + ' ' + OP + ' ' + String(SECONDNUM) + ' =';
+                    DISPLAY = String(operate(OP,FIRSTNUM,SECONDNUM));
+                }
+                CLEAR = true;
+            }
         }
-    } else {
-        if (DISPLAY.length < 13) {
-            if (e.target.innerText != '0' || DISPLAY || FIRSTNUM != null) {
-                DISPLAY += e.target.innerText;
-                mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
+        
+    } else if (e.target.classList.contains('misc')) {
+        // misc
+        if (e.target.id == 'ac') {
+            DISPLAY = '';
+            SUBDISPLAY = '';
+            OP = '';
+            FIRSTNUM = null;
+            SECONDNUM = null;
+            CLEAR = false;
+        } else if (e.target.id == 'back') {
+            if (CLEAR) {
+                SUBDISPLAY = '';
+                OP = '';
+                FIRSTNUM = null;
+                SECONDNUM = null;
+            } else {
+                DISPLAY = DISPLAY.slice(0,-1);
             }
         }
     }
+    mainDisplay.innerText = DISPLAY ? DISPLAY : '0';
+    subDisplay.innerText = SUBDISPLAY;
 }
-
 
 let btns = document.body.getElementsByClassName('btn');
 for (let i=0; i < btns.length; ++i) {
@@ -130,5 +164,4 @@ document.addEventListener('keydown', function(event) {
     if (Object.keys(dict).includes(event.key)) {
         document.getElementById(dict[event.key]).click();
     }
-    console.log(event);
 });
