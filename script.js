@@ -104,7 +104,7 @@ function updateDisplay(e) {
             // other operations
             if (e.target.id == 'sign') {
                 SUBDISPLAY = 'negate( ' + DISPLAY + ' )';
-                FIRSTNUM = -FIRSTNUM;
+                FIRSTNUM = -Number(DISPLAY);
                 SECONDNUM = null;
                 DISPLAY = DISPLAY ? String(FIRSTNUM) : '0';
             } else if (e.target.id == 'dec') {
