@@ -1,7 +1,6 @@
 var DISPLAY = '';
 var SUBDISPLAY = '';
 var OP = ''
-var HOLD = ''
 var FIRSTNUM = null;
 var SECONDNUM = null;
 var CLEAR = false;
@@ -61,7 +60,6 @@ function operate(operator,a,b) {
 }
 
 function updateDisplay(e) {
-    console.log(DISPLAY);
     if (e.target.classList.contains('number')) {
         // numbers
         if (DISPLAY.length < 13 || CLEAR) {
