@@ -60,7 +60,7 @@ function updateDisplay(e) {
     if (e.target.classList.contains('number')) {
         // numbers
         if (DISPLAY.length < 13 || CLEAR) {
-            if (!(Number(DISPLAY)) || CLEAR) {
+            if (DISPLAY == '' || DISPLAY == '0'|| CLEAR) {
                 DISPLAY = e.target.id;
                 CLEAR = false;
             } else {
