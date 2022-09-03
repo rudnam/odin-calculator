@@ -7,31 +7,28 @@ var CLEAR = false;
 const mainDisplay = document.body.querySelector('#display-main');
 const subDisplay = document.body.querySelector('#display-sub');
 
-// from https://stackoverflow.com/questions/9539513/is-there-a-reliable-way-in-javascript-to-obtain-the-number-of-decimal-places-of/44815797#44815797
-function decimalPlaces(n) {
-    function hasFraction(n) {
-        return Math.abs(Math.round(n) - n) > 1e-10;
+function shortenDecimal(a) {
+    i = a.toString().length < 100 ? a.toString().length : 100;
+    while (a.toString().length > 13) {
+        a = Number(a.toFixed(i))
+        i -= 1;
     }
-    let count = 0;
-    while (hasFraction(n * (10 ** count)) && isFinite(10 ** count)) {
-        count += 1;
-    }
-    return count;
+    return String(a);
 }
 
 function add(a,b) {
     ans = a + b;
-    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(Math.abs(13 - (ans.toString().length - decimalPlaces(ans)))) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? shortenDecimal(ans) : String(ans);
 }
 
 function subtract(a,b) {
     ans = a - b;
-    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(Math.abs(13 - (ans.toString().length - decimalPlaces(ans)))) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? shortenDecimal(ans) : String(ans);
 }
 
 function multiply(a,b) {
     ans = a * b;
-    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(Math.abs(13 - (ans.toString().length - decimalPlaces(ans)))) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? shortenDecimal(ans) : String(ans);
 }
 
 function divide(a,b) {
@@ -39,12 +36,12 @@ function divide(a,b) {
         return 	'(凸ಠ益ಠ)凸';
     }
     ans = a / b;
-    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(Math.abs(13 - (ans.toString().length - decimalPlaces(ans)))) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? shortenDecimal(ans) : String(ans);
 }
 
 function square(a) {
     ans = a ** 2;
-    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? ans.toFixed(Math.abs(13 - (ans.toString().length - decimalPlaces(ans)))) : ans;
+    return ans > 9999999999999 ? ans.toExponential(2) : ans.toString().length > 13 ? shortenDecimal(ans) : String(ans);
 }
 
 function operate(operator,a,b) {
@@ -63,7 +60,7 @@ function updateDisplay(e) {
     if (e.target.classList.contains('number')) {
         // numbers
         if (DISPLAY.length < 13 || CLEAR) {
-            if (DISPLAY === '' || DISPLAY == '0' || CLEAR) {
+            if (!(Number(DISPLAY)) || CLEAR) {
                 DISPLAY = e.target.id;
                 CLEAR = false;
             } else {
@@ -77,20 +74,20 @@ function updateDisplay(e) {
             if (FIRSTNUM === null) {
                 OP = e.target.innerText;
                 FIRSTNUM = Number(DISPLAY);
-                SUBDISPLAY = DISPLAY + ' ' + OP;
+                SUBDISPLAY = String(FIRSTNUM) + ' ' + OP;
             } else if (SECONDNUM === null) {
                 if (CLEAR) {
                     OP = e.target.innerText;
                     SUBDISPLAY = DISPLAY + ' ' + OP;
                 } else {
-                    SUBDISPLAY = OP ? String(operate(OP,FIRSTNUM,Number(DISPLAY))) : String(FIRSTNUM);
+                    SUBDISPLAY = OP ? operate(OP,FIRSTNUM,Number(DISPLAY)) : String(Number(FIRSTNUM));
                     DISPLAY = SUBDISPLAY;
                     OP = e.target.innerText;
                     FIRSTNUM = Number(DISPLAY);
                     SUBDISPLAY += ' ' + OP;
                 }
             } else {
-                SUBDISPLAY = String(operate(OP,FIRSTNUM,SECONDNUM));
+                SUBDISPLAY = operate(OP,FIRSTNUM,SECONDNUM);
                 DISPLAY = SUBDISPLAY;
                 OP = e.target.innerText;
                 FIRSTNUM = Number(DISPLAY);
@@ -101,7 +98,7 @@ function updateDisplay(e) {
         } else {
             // other operations
             if (e.target.id == 'sign') {
-                SUBDISPLAY = 'negate( ' + DISPLAY + ' )';
+                SUBDISPLAY = 'negate( ' + String(Number(DISPLAY)) + ' )';
                 FIRSTNUM = -Number(DISPLAY);
                 SECONDNUM = null;
                 DISPLAY = DISPLAY ? String(FIRSTNUM) : '0';
@@ -118,22 +115,22 @@ function updateDisplay(e) {
                     DISPLAY = DISPLAY ? DISPLAY + '.': '0.';
                 }
             } else if (e.target.id == 'sqr') {
-                SUBDISPLAY = 'sqr( ' + DISPLAY + ' )';
+                SUBDISPLAY = 'sqr( ' + String(Number(DISPLAY)) + ' )';
                 FIRSTNUM = square(Number(DISPLAY));
                 SECONDNUM = null;
                 DISPLAY = String(FIRSTNUM);
             } else if (e.target.id == 'equal') {
-                if (FIRSTNUM == null || !OP) {
+                if (FIRSTNUM === null || !OP) {
                     FIRSTNUM = Number(DISPLAY);
                     SUBDISPLAY = String(FIRSTNUM) + ' =';
-                } else if (SECONDNUM == null) {
+                } else if (SECONDNUM === null) {
                     SECONDNUM = DISPLAY ? Number(DISPLAY) : FIRSTNUM;
                     SUBDISPLAY = String(FIRSTNUM) + ' ' + OP + ' ' + String(SECONDNUM) + ' =';
-                    DISPLAY = String(operate(OP,FIRSTNUM,SECONDNUM));
+                    DISPLAY = operate(OP,FIRSTNUM,SECONDNUM);
                 } else {
                     FIRSTNUM = Number(DISPLAY);
                     SUBDISPLAY = String(FIRSTNUM) + ' ' + OP + ' ' + String(SECONDNUM) + ' =';
-                    DISPLAY = String(operate(OP,FIRSTNUM,SECONDNUM));
+                    DISPLAY = operate(OP,FIRSTNUM,SECONDNUM);
                 }
                 CLEAR = true;
             }
@@ -170,7 +167,17 @@ for (let i=0; i < btns.length; ++i) {
 }
 
 document.addEventListener('keydown', function(event) {
-    var dict = {'Backspace': 'back', '^': 'sqr', 'Enter': 'equal', '=': 'equal', 'Escape': 'ac', '/': 'div', '*': 'mult', '-': 'sub', '+': 'add', '.': 'dec'};
+    var dict = {'Backspace': 'back',
+                '^': 'sqr',
+                'Enter': 'equal',
+                '=': 'equal',
+                'Escape': 'ac',
+                '/': 'div',
+                '*': 'mult',
+                '-': 'sub',
+                '+': 'add',
+                '.': 'dec'};
+
     for (let i=0; i < 10; i++) {
         dict[i] = i;
     }
