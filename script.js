@@ -83,7 +83,7 @@ function updateDisplay(e) {
                     OP = e.target.innerText;
                     SUBDISPLAY = DISPLAY + ' ' + OP;
                 } else {
-                    SUBDISPLAY = String(operate(OP,FIRSTNUM,Number(DISPLAY)));
+                    SUBDISPLAY = OP ? String(operate(OP,FIRSTNUM,Number(DISPLAY))) : String(FIRSTNUM);
                     DISPLAY = SUBDISPLAY;
                     OP = e.target.innerText;
                     FIRSTNUM = Number(DISPLAY);
